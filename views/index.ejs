@@ -9,10 +9,18 @@
     </head>
     <body>
         <h1>Hey <%= name %></h1>
+        <form method="POST" action="../tasks">
+            <label for="task_text">Enter your task:</label>
+            <input type="text" name="task" id="task_text" required />
+            <input type="submit" value="Submit!" />
+        </form>
         <Button id="add_task_button" >Add Task</Button>
         <main id = "task_list">
-            <ui id="tasks">
-            </ui>
+            <ul id="tasks">
+                <%_ for (const task of tasks) { _%>
+                    <li><%=  task %></li>
+                  <%_ } _%>
+            </ul>
         </main>
     </body>
     <script src="/script/button_event.js"></script>
