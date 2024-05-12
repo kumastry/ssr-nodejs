@@ -19,8 +19,17 @@ app.get('/', (req, res) => {
 });
 
 app.get('/index', (req, res) => {
-  const tasks = JSON.parse(fs.readFileSync("./data/tasks.json", 'utf-8'));
-  res.status(200).render('index', {name: 'kimastry', tasks : tasks});
+  try {
+    let tasks : string[] = []
+    if(fs.existsSync('./data/tasks.json')) {
+      tasks = JSON.parse(fs.readFileSync("./data/tasks.json", 'utf-8'));
+    }
+    return res.status(200).render('index', {name: 'kimastry', tasks : tasks});
+  } catch (e) {
+    if(e instanceof Error) {
+      res.status(500).send({log: e.message, message : 'an error occured'})
+    }
+  }
 });
 
 app.post('/tasks', (req, res) => {
@@ -30,7 +39,7 @@ app.post('/tasks', (req, res) => {
   }
 
   if (!fs.existsSync(path + 'tasks.json')) {
-    fs.writeFileSync(path + 'tasks.json',  JSON.stringify([req.body.task], null, 2));
+    fs.writeFileSync(path + 'tasks.json',  JSON.stringify([], null, 2));
   }
 
   const tasks = JSON.parse(fs.readFileSync("./data/tasks.json", 'utf-8'));
@@ -39,6 +48,8 @@ app.post('/tasks', (req, res) => {
 
   res.redirect("../index");
 });
+
+// app.delete app.PATCH　-> 実装予定
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
