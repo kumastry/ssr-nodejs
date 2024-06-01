@@ -1,10 +1,22 @@
 import express from "express";
 import fs from 'fs';
+import multer from 'multer';
 
 const app = express();
 const port = 3000;
+const multerStorage = multer.diskStorage({
+  destination (req, file, cb) {
+    cb(null, './uploads/');
+  },
+  filename (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  }
+});
+
+const upload = multer({ storage: multerStorage })
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
+app.use(express.static("uploads"));
 app.use(express.urlencoded({extended:true}))
 
 app.use((req, res, next) => {
@@ -50,6 +62,16 @@ app.post('/tasks', (req, res) => {
 });
 
 // app.delete app.PATCH　-> 実装予定
+
+
+app.get('/images', (req, res) => {
+  return res.status(200).render('images', {name: 'kimastry'});
+});
+
+app.post('/images',  upload.single('image'), (req, res) => {
+  console.log( req.file );
+  res.redirect("./images");
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
